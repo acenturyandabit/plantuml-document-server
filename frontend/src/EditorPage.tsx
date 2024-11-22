@@ -16,6 +16,7 @@ export default () => {
       .then((data) => {
         setText(data.contents);
       });
+    document.title = `Plantuml Document Server - ${id}`;
   }, []);
 
   useEffect(() => {

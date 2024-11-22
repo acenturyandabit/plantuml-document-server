@@ -9,6 +9,7 @@ export default () => {
       .then((data) => {
         setDocList(data);
       });
+    document.title = `Plantuml Document Server`;
   },[]);
   return (
     <div>
