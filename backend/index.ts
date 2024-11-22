@@ -1,14 +1,3 @@
-/*
-give me a typescript ESM express app using that has a POST endpoint that takes a
-json body with a 'data' field, which it forwards to a plantUML server, using
-plantuml's specific base64 encoding, and then returns the result as a html
-image tag
-
-- manually change port 3000 to 3039
-- Fix type error
-- make it emit text
-*/
-
 import express from "express";
 import bodyParser from "body-parser";
 
@@ -18,7 +7,6 @@ import { sendPng } from "./sendPng";
 
 const app = express();
 const port = 3039;
-
 
 app.use(bodyParser.json());
 app.use(express.static("static"));
@@ -60,7 +48,10 @@ app.post("/api/generate-uml/:filename", async (req, res) => {
   });
 });
 
-
+app.get("/api/documents", (req, res) => {
+  const docList = fs.readdirSync(FILE_DIR);
+  res.json(docList);
+});
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

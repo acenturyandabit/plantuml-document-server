@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import Editor from "@monaco-editor/react";
+import { editor } from "monaco-editor";
 
 export default () => {
   const [text, setText] = useState("");
@@ -12,13 +14,13 @@ export default () => {
       .then((data) => {
         setText(data.contents);
       });
-  },[]);
+  }, []);
 
   useEffect(() => {
     const fetchImage = async () => {
       if (text) {
         try {
-          const response = await fetch(`/api/generate-uml/${id}`, { 
+          const response = await fetch(`/api/generate-uml/${id}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -45,18 +47,39 @@ export default () => {
     return () => clearTimeout(delayDebounceFn); // Cleanup
   }, [text]);
 
+  const halfPartStyle = {
+    flex: 1,
+    padding: "20px",
+  };
+
+  const editorRef = React.useRef<editor.IStandaloneCodeEditor | null>(null);
+
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Text to Image Converter</h1>
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Type your text here..."
-      />
-      <div style={{ marginTop: "20px" }}>
-        {imageUrl && (
-          <img src={imageUrl} alt="Generated" style={{ maxWidth: "100%" }} />
-        )}
+      <h1>{id}</h1>
+      <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+        <div style={halfPartStyle}>
+          <Editor
+            height="90vh"
+            defaultLanguage="plantuml"
+            defaultValue={text}
+            onMount={(editor) => {
+              editorRef.current = editor;
+            }}
+            onChange={() => setText(editorRef.current?.getValue() || "")}
+          />
+        </div>
+        <div style={halfPartStyle}>
+          <div style={{ marginTop: "20px" }}>
+            {imageUrl && (
+              <img
+                src={imageUrl}
+                alt="Generated"
+                style={{ maxWidth: "100%" }}
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
