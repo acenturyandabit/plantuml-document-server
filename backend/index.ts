@@ -11,23 +11,23 @@ image tag
 
 import express from "express";
 import bodyParser from "body-parser";
-import axios from "axios";
-import { Buffer } from "buffer";
-import encodeAsPlantuml from "./encodeAsPlantuml";
+
 import path from "path";
 import fs from "fs";
+import { sendPng } from "./sendPng";
 
 const app = express();
 const port = 3039;
-const plantUMLServerUrl = "http://localhost:8080/png/"; // Change to your PlantUML server URL
+
 
 app.use(bodyParser.json());
+app.use(express.static("static"));
 
 // Directory to store files
 const FILE_DIR = path.join(__dirname, "files");
 
 // Endpoint to get the contents of a file
-app.get("/get-file/:filename", (req, res) => {
+app.get("/api/get-file/:filename", (req, res) => {
   const { filename } = req.params;
   const filePath = path.join(FILE_DIR, filename);
 
@@ -40,7 +40,7 @@ app.get("/get-file/:filename", (req, res) => {
 });
 
 // Endpoint to save text to a file
-app.post("/generate-uml/:filename", async (req, res) => {
+app.post("/api/generate-uml/:filename", async (req, res) => {
   const { filename } = req.params;
   const { data } = req.body;
 
@@ -60,32 +60,7 @@ app.post("/generate-uml/:filename", async (req, res) => {
   });
 });
 
-const sendPng = async (res: express.Response, data: string) => {
-  if (!data) {
-    res.status(400).json({ error: 'The "data" field is required.' });
-  }
-  try {
-    // Encode the data for PlantUML
-    const encodedData = encodeAsPlantuml(data);
 
-    console.log(`${plantUMLServerUrl}${encodedData}`);
-
-    // Send the request to the PlantUML server
-    const response = await axios.get(`${plantUMLServerUrl}${encodedData}`, {
-      responseType: "arraybuffer",
-    });
-
-    // Convert the response data to base64
-    const base64Image = Buffer.from(response.data).toString("base64");
-
-    // Return the image as an HTML img tag
-    const imgTag = `data:image/png;base64,${base64Image}`;
-    res.send(imgTag);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to generate UML diagram." });
-  }
-};
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

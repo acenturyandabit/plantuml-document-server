@@ -5,11 +5,15 @@ export default defineConfig({
   plugins: [tsconfigPaths()],
   server: {
     proxy: {
-      "/generate-uml": {
+      "/api": {
         target: `http://localhost:${BACKEND_PORT}/`,
         changeOrigin: true,
         secure: false,
       },
     },
   },
+  build:{
+    outDir: "../backend/static",
+    emptyOutDir: true,
+  }
 });
