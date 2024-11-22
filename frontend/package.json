@@ -12,9 +12,12 @@
   "license": "MIT",
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
+    "@types/react-svg-pan-zoom": "^3.3.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6"
+    "react-router-dom": "^6",
+    "react-svg-pan-zoom": "^3.13.1",
+    "react-svg-pan-zoom-loader": "^1.6.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.7",

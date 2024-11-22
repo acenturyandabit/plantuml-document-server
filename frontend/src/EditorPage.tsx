@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { editor } from "monaco-editor";
+import { ReactSvgPanZoomLoader } from "react-svg-pan-zoom-loader";
+import { UncontrolledReactSVGPanZoom } from "react-svg-pan-zoom";
 
 export default () => {
   const [text, setText] = useState("");
@@ -29,11 +31,13 @@ export default () => {
           });
 
           if (!response.ok) {
-            throw new Error("Network response was not ok");
+            const errorMessage = await response.json();
+            setImageUrl(errorMessage.errorImage);
+            console.log(errorMessage.errorImage);
+          } else {
+            const blob = await response.text();
+            setImageUrl(blob);
           }
-
-          const blob = await response.text();
-          setImageUrl(blob);
         } catch (error) {
           console.error("Error fetching image:", error);
         }
@@ -53,6 +57,8 @@ export default () => {
   };
 
   const editorRef = React.useRef<editor.IStandaloneCodeEditor | null>(null);
+  const width = 700;
+  const height = 700;
 
   return (
     <div style={{ padding: "20px" }}>
@@ -71,13 +77,16 @@ export default () => {
         </div>
         <div style={halfPartStyle}>
           <div style={{ marginTop: "20px" }}>
-            {imageUrl && (
-              <img
-                src={imageUrl}
-                alt="Generated"
-                style={{ maxWidth: "100%" }}
-              />
-            )}
+            <ReactSvgPanZoomLoader
+              svgXML={imageUrl}
+              render={(content: string) => (
+                <UncontrolledReactSVGPanZoom width={width} height={height}>
+                  <svg width={width} height={height}>
+                    {content}
+                  </svg>
+                </UncontrolledReactSVGPanZoom>
+              )}
+            />
           </div>
         </div>
       </div>
